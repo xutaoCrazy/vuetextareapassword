@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="demo">
+    <textarea placeholder="请输入"  v-model="valueText"  @keyup="keyUp(valueText,$event)"   @keydown="keyDown($event)" @input="input" > </textarea>
+    <span style="margin-right: 200px"> {{valueShow}}</span>
+</div>
+</body>
+<script>
+    const aa = new Vue({
+        el: '#demo',
+        data() {
+            return {
+                valueText: '',
+                valueTrea:[],
+                isCtrl:'',
+                flag:true,
+                valueShow:''
+            }
+        },
+        methods: {
+            keyDown(event) {
+                this.isCtrl = event.ctrlKey;
+                if(event.keyCode==8){
+                    this.flag=false;
+                    this.valueTrea=this.valueTrea.join().replace(/,/g, "").split('');
+                    var $num=event.target.selectionEnd-event.target.selectionStart;
+                    if($num==1 || $num==0){
+                        var index= event.target.selectionStart;
+                        this.valueTrea.splice(index-1,1);
+                    }else{
+                        this.valueTrea.splice(event.target.selectionStart,$num);
+                    }
+                    this.valueShow = this.valueTrea.join().replace(/,/g, "") // 输入的明文
+                }else{
+                    this.flag=true;
+                }
+            },
+            input() {
+                if(this.flag && this.valueText.replace(/\*/g, "") !=''){
+                    this.passwordText()
+                }
+            },
+            keyUp() {
+                if (this.isCtrl && !this.valueCtrl) {
+                    this.valueCtrl = this.valueText //  粘贴的明文
+                    this.valueShow = ''
+                }
+               this.passwordText()
+            },
+            passwordText(){
+                this.valueTrea.push(this.valueText.replace(/\*/g, ""));
+                this.valueShow=this.valueTrea.join().replace(/,/g, "");
+                this.valueText = this.valueText.replace(/./g, '*'); // 替换成密文点点
+            }
+        }
+    });
+</script>
+</html>
